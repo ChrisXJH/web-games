@@ -1,25 +1,23 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import WelcomeScreen from './layouts/welcome-screen';
+import Gomoku from './layouts/gomoku';
+import { Switch, Route } from 'react-router-dom';
+import { ConnectedRouter } from 'connected-react-router';
+import { History } from 'history'
+import { GOMOKU_PATH, HOME_PATH } from './common/constants';
 
-function App() {
+interface AppProps {
+  history: History;
+}
+
+function App(props: AppProps) {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ConnectedRouter history={props.history}>
+      <Switch>
+        <Route path={`${GOMOKU_PATH}/:id`} component={Gomoku} />
+        <Route path={HOME_PATH} component={WelcomeScreen} />
+      </Switch>
+    </ConnectedRouter>
   );
 }
 
