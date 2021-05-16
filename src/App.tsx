@@ -1,9 +1,9 @@
 import React from 'react';
-import WelcomeScreen from './layouts/welcome-screen';
-import Gomoku from './layouts/gomoku';
 import { Switch, Route } from 'react-router-dom';
 import { ConnectedRouter } from 'connected-react-router';
-import { History } from 'history'
+import { History } from 'history';
+import Gomoku from './layouts/gomoku';
+import WelcomeScreen from './layouts/welcome-screen';
 import { GOMOKU_PATH, HOME_PATH } from './common/constants';
 
 interface AppProps {
