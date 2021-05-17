@@ -1,10 +1,15 @@
 import { createAction } from '@reduxjs/toolkit';
 import type { AnyAction } from '@reduxjs/toolkit';
-import type { GameAction, GameSnapshot, User } from '../../common/types';
-import type { GameEvent, GamePlayEvent, PlayerJoinEvent } from '../types';
+import type {
+  GameAction, GameID, GameSnapshot, User, UserID
+} from '../../common/types';
+import type {
+  GameEvent, GamePlayEvent, PlayerJoinEvent, PlayerLeaveEvent
+} from '../types';
 import {
   GAME_EVENT, GAME_PLAY, GAME_PLAY_EVENT, GAME_PLAY_FAILURE, JOIN_GAME_FAILURE,
-  JOIN_GAME_SUCCESS, PLAYER_JOIN, PLAYER_JOIN_EVENT
+  JOIN_GAME_SUCCESS, PLAYER_JOIN, PLAYER_LEAVE, PLAYER_JOIN_EVENT, PLAYER_LEAVE_EVENT,
+  GAME_END, GAME_END_EVENT
 } from '../constants';
 
 export const joinGameSuccess = createAction(
@@ -29,6 +34,16 @@ export const playerJoin = createAction(
   (payload: PlayerJoinEvent) => ({ payload })
 );
 
+export const playerLeave = createAction(
+  PLAYER_LEAVE,
+  (payload: PlayerLeaveEvent) => ({ payload })
+);
+
+export const gameEnd = createAction(
+  GAME_END,
+  (payload: GameID) => ({ payload })
+);
+
 const defaultGameEvent = createAction(
   GAME_EVENT,
   (payload: GameEvent) => ({ payload })
@@ -41,8 +56,14 @@ export const gameEvent = (event: GameEvent): AnyAction => {
     case PLAYER_JOIN_EVENT:
       return playerJoin({ gameId, player: payload as User });
 
+    case PLAYER_LEAVE_EVENT:
+      return playerLeave({ gameId, playerId: payload as UserID });
+
     case GAME_PLAY_EVENT:
       return gamePlay({ gameId, action: payload as GameAction });
+
+    case GAME_END_EVENT:
+      return gameEnd(gameId);
 
     default:
       break;

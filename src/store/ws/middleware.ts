@@ -1,10 +1,12 @@
 /* eslint-disable max-len */
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { AnyAction, Middleware, MiddlewareAPI } from 'redux';
-import { gameEvent, joinGameSuccess } from '../game/actions';
+import { gameEvent, joinGameFailure, joinGameSuccess } from '../game/actions';
 import type { ServicesAPI, EmitPayload } from '../types';
 import { websocketConnect } from './actions';
-import { WEBSOCKET_EMIT, WEBSOCKET_GAME_EVENT, WEBSOCKET_GAME_JOIN_SUCCESS } from '../constants';
+import {
+  WEBSOCKET_EMIT, WEBSOCKET_GAME_EVENT, WEBSOCKET_GAME_JOIN_SUCCESS, WEBSOCKET_GAME_JOIN_FAILURE
+} from '../constants';
 
 type WebsocketMiddlewareOptions = {
   api: ServicesAPI;
@@ -12,7 +14,8 @@ type WebsocketMiddlewareOptions = {
 
 const eventActionMap: { [key: string]: (...args: any[]) => AnyAction } = {
   [WEBSOCKET_GAME_EVENT]: gameEvent,
-  [WEBSOCKET_GAME_JOIN_SUCCESS]: joinGameSuccess
+  [WEBSOCKET_GAME_JOIN_SUCCESS]: joinGameSuccess,
+  [WEBSOCKET_GAME_JOIN_FAILURE]: joinGameFailure
 };
 
 const handleConnected = (options: WebsocketMiddlewareOptions, store: MiddlewareAPI) => {

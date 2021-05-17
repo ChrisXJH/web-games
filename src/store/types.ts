@@ -1,5 +1,7 @@
 import type { Dispatch } from '@reduxjs/toolkit';
-import type { GameAction, GameID, User } from '../common/types';
+import type {
+  GameAction, GameID, User, UserID
+} from '../common/types';
 import type GameService from '../services/game-service';
 import type UserService from '../services/user-service';
 import type WebsocketService from '../services/websocket-service';
@@ -28,6 +30,11 @@ export type GameEvent = {
 export type PlayerJoinEvent = {
   gameId: GameID;
   player: User;
+};
+
+export type PlayerLeaveEvent = {
+  gameId: GameID;
+  playerId: UserID;
 };
 
 export type GamePlayEvent = {
