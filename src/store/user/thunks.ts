@@ -10,7 +10,7 @@ export const getUser = createThunkAction(
   (_, thunkAPI) => thunkAPI.extra.userService.getUser()
 );
 
-const updateUsername = createThunkAction(
+export const updateUsername = createThunkAction(
   UPDATE_USERNAME,
   (_, thunkApi) => {
     const state = thunkApi.getState() as RootState;

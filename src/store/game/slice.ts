@@ -1,7 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import {
-  GamePlayEvent, GameSnapshot, GomokuGameAction, GomokuSnapshot, User
+import { remove } from 'lodash';
+import type {
+  GameSnapshot, GomokuGameAction, GomokuSnapshot
 } from '../../common/types';
+import type { GamePlayEvent, PlayerJoinEvent } from '../types';
 import {
   GAME_DOMAIN, GAME_PLAY, JOIN_GAME_SUCCESS, PLAYER_JOIN
 } from '../constants';
@@ -27,14 +29,17 @@ const gameSlice = createSlice({
     },
     [GAME_PLAY]: (state, action: PayloadAction<GamePlayEvent>) => {
       // Gomoku-only for now
-      const { payload: { playerId, action: gameAction } } = action;
-      const { x, y } = gameAction as GomokuGameAction;
-      const { grid } = state.snapshot as GomokuSnapshot;
+      const { action: gameAction } = action.payload;
+      const { actions } = state.snapshot as GomokuSnapshot;
 
-      grid.push([playerId, x, y]);
+      actions.push(gameAction as GomokuGameAction);
     },
-    [PLAYER_JOIN]: (state, action: PayloadAction<User>) => {
-      state.snapshot.players.push(action.payload);
+    [PLAYER_JOIN]: (state, action: PayloadAction<PlayerJoinEvent>) => {
+      const { players } = state.snapshot;
+      const { player: newPlayer } = action.payload;
+
+      remove(players, (player) => player.id === newPlayer.id);
+      players.push(newPlayer);
     }
   }
 });

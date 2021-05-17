@@ -1,28 +1,29 @@
-import { PayloadAction } from '@reduxjs/toolkit';
-import { Middleware, MiddlewareAPI } from 'redux';
-import { WEBSOCKET_EMIT } from '../constants';
-import { ServicesAPI } from '../types';
-import { websocketConnect, websocketEvent } from './actions';
-import { ActionPreparer, EmitPayload } from './types';
+/* eslint-disable max-len */
+import type { PayloadAction } from '@reduxjs/toolkit';
+import type { AnyAction, Middleware, MiddlewareAPI } from 'redux';
+import { gameEvent, joinGameSuccess } from '../game/actions';
+import type { ServicesAPI, EmitPayload } from '../types';
+import { websocketConnect } from './actions';
+import { WEBSOCKET_EMIT, WEBSOCKET_GAME_EVENT, WEBSOCKET_GAME_JOIN_SUCCESS } from '../constants';
 
-const prepareDefaultAction = (...args: any[]) => websocketEvent(args);
-
-export type WebsocketMiddlewareOptions = {
+type WebsocketMiddlewareOptions = {
   api: ServicesAPI;
-  prepareAction?: ActionPreparer;
+};
+
+const eventActionMap: { [key: string]: (...args: any[]) => AnyAction } = {
+  [WEBSOCKET_GAME_EVENT]: gameEvent,
+  [WEBSOCKET_GAME_JOIN_SUCCESS]: joinGameSuccess
 };
 
 const handleConnected = (options: WebsocketMiddlewareOptions, store: MiddlewareAPI) => {
-  const { api, prepareAction = prepareDefaultAction } = options;
+  const { api } = options;
 
-  api.websocketService.onAny((...args) => {
-    const action = prepareAction(prepareDefaultAction, ...args);
+  api.websocketService.onAny((event, arg) => {
+    const actionCreator = eventActionMap[event];
 
-    if (process.env.NODE_ENV !== 'production') {
-      console.log(action);
+    if (actionCreator) {
+      store.dispatch(actionCreator(arg));
     }
-
-    store.dispatch(action);
   });
 };
 
@@ -33,8 +34,7 @@ const handleEmit = (options: WebsocketMiddlewareOptions, action: PayloadAction<E
   api.websocketService.emit(event, ...args);
 };
 
-// eslint-disable-next-line max-len
-export const websocketMiddleware = (options: WebsocketMiddlewareOptions): Middleware => (store) => (next) => (action) => {
+const websocketMiddleware = (options: WebsocketMiddlewareOptions): Middleware => (store) => (next) => (action) => {
   const { type } = action;
 
   switch (type) {
@@ -52,3 +52,5 @@ export const websocketMiddleware = (options: WebsocketMiddlewareOptions): Middle
 
   return next(action);
 };
+
+export default websocketMiddleware;

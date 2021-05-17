@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { getUser, updateUsernameAndStartGame } from './thunks';
+import { getUser, updateUsername, updateUsernameAndStartGame } from './thunks';
 import { USER_DOMAIN } from '../constants';
 
 export type UserState = {
@@ -28,6 +28,13 @@ const userSlice = createSlice({
     });
     builder.addCase(getUser.rejected, (state, action) => {
       console.error(action.payload); // TODO: implement better error handling
+    });
+
+    builder.addCase(updateUsername.fulfilled, (state, action) => {
+      const { payload: player } = action;
+
+      state.id = player.id;
+      state.displayName = player.displayName;
     });
 
     builder.addCase(updateUsernameAndStartGame.rejected, (state, action) => {

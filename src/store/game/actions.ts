@@ -1,7 +1,10 @@
 import { createAction } from '@reduxjs/toolkit';
-import type { GamePlayEvent, GameSnapshot, User } from '../../common/types';
+import type { AnyAction } from '@reduxjs/toolkit';
+import type { GameAction, GameSnapshot, User } from '../../common/types';
+import type { GameEvent, GamePlayEvent, PlayerJoinEvent } from '../types';
 import {
-  GAME_PLAY, GAME_PLAY_FAILURE, JOIN_GAME_FAILURE, JOIN_GAME_SUCCESS, PLAYER_JOIN
+  GAME_EVENT, GAME_PLAY, GAME_PLAY_EVENT, GAME_PLAY_FAILURE, JOIN_GAME_FAILURE,
+  JOIN_GAME_SUCCESS, PLAYER_JOIN, PLAYER_JOIN_EVENT
 } from '../constants';
 
 export const joinGameSuccess = createAction(
@@ -23,5 +26,29 @@ export const gamePlayFailure = createAction(
 
 export const playerJoin = createAction(
   PLAYER_JOIN,
-  (payload: User) => ({ payload })
+  (payload: PlayerJoinEvent) => ({ payload })
 );
+
+const defaultGameEvent = createAction(
+  GAME_EVENT,
+  (payload: GameEvent) => ({ payload })
+);
+
+export const gameEvent = (event: GameEvent): AnyAction => {
+  const { type, gameId, payload } = event;
+
+  switch (type) {
+    case PLAYER_JOIN_EVENT:
+      return playerJoin({ gameId, player: payload as User });
+
+    case GAME_PLAY_EVENT:
+      return gamePlay({ gameId, action: payload as GameAction });
+
+    default:
+      break;
+  }
+
+  return defaultGameEvent(event);
+};
+
+export * from './thunks';

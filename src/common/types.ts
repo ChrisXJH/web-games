@@ -11,29 +11,22 @@ export interface GameSnapshot {
   players: User[];
 }
 
-export interface GameAction {}
+export interface GameAction {
+  playerId?: UserID;
+}
 
 export interface GomokuGameAction extends GameAction {
   x: number;
   y: number;
 }
 
-export type GomokuSnapshotGrid = [UserID, number, number][];
-
 export interface GomokuSnapshot extends GameSnapshot {
   dimensions: [number, number];
-  grid: GomokuSnapshotGrid;
+  actions: GomokuGameAction[];
 }
 
 // Websocket Requests
 export type GamePlayRequest = {
   gameId: GameID;
-  action: GameAction;
-};
-
-// Websocket Events
-export type GamePlayEvent = {
-  gameId: GameID;
-  playerId: UserID;
   action: GameAction;
 };

@@ -9,8 +9,7 @@ import UserService from '../services/user-service';
 import { createRootReducer } from './rootReducer';
 import type { ServicesAPI } from './types';
 import WebsocketService from '../services/websocket-service';
-import { websocketMiddleware } from './ws/middleware';
-import prepareWebsocketAction from './prepareWebsocketAction';
+import websocketMiddleware from './ws/middleware';
 
 const httpService = new HttpService(SERVER_URL);
 const websocketService = new WebsocketService(SERVER_URL);
@@ -33,13 +32,13 @@ const store = configureStore({
     return defaultMiddleware
       .concat(routerMiddleware(history))
       .concat(websocketMiddleware({
-        api: servicesAPI,
-        prepareAction: prepareWebsocketAction
+        api: servicesAPI
       }));
   },
   devTools: process.env.NODE_ENV !== 'production'
 });
 
+export type AppStore = typeof store;
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 

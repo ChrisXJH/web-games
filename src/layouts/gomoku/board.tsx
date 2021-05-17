@@ -8,6 +8,7 @@ const CLICKABLE_SIZE = 15;
 
 type GomokuBoardProps = {
   grid: string[][];
+  focused: [number | null, number | null];
   onCellClick: (i: number, j: number) => any;
 };
 
@@ -21,7 +22,7 @@ const useStyles = makeStyles({
     padding: 0,
     height: `${CELL_SIZE}px`,
     width: `${CELL_SIZE}px`,
-    border: '1px solid #555',
+    border: '1px solid #888',
     verticalAlign: 'top',
     boxSizing: 'border-box',
     backgroundColor: 'rgb(241, 236, 211)'
@@ -34,22 +35,29 @@ const useStyles = makeStyles({
     height: `${CLICKABLE_SIZE}px`,
     width: `${CLICKABLE_SIZE}px`,
     border: '1px solid transparent',
+    // boxShadow: '0px 0px 10px 0px transparent',
     borderRadius: '50%',
     boxSizing: 'border-box',
     cursor: 'pointer'
   },
   clickableWhite: {
-    border: '1px solid #444',
+    border: '1px solid #bbb',
     backgroundColor: '#fff'
   },
   clickableBlack: {
-    border: '1px solid #444',
+    border: '1px solid #111',
     backgroundColor: '#000'
+  },
+  whiteFocused: {
+    boxShadow: '0px 0px 4px 0px rgba(0,0,0,0.4)'
+  },
+  blackFocused: {
+    boxShadow: '0px 0px 4px 0px rgba(0,0,0,0.8)'
   }
 });
 
 const GomokuBoard = (props: GomokuBoardProps) => {
-  const { grid, onCellClick } = props;
+  const { grid, focused, onCellClick } = props;
   const classes = useStyles();
 
   if (!grid || grid.length === 0) {
@@ -60,6 +68,19 @@ const GomokuBoard = (props: GomokuBoardProps) => {
     B: `${classes.clickable} ${classes.clickableBlack}`,
     W: `${classes.clickable} ${classes.clickableWhite}`,
     U: classes.clickable
+  };
+
+  const focusedClassNameMap: { [key: string]: string } = {
+    B: classes.blackFocused,
+    W: classes.whiteFocused
+  };
+
+  const getCellClassName = (cell: string, i: number, j: number): string => {
+    const className = cellClassNameMap[cell];
+
+    return i === focused[0] && j === focused[1]
+      ? `${className} ${focusedClassNameMap[cell]}`
+      : className;
   };
 
   const board = (
@@ -75,7 +96,7 @@ const GomokuBoard = (props: GomokuBoardProps) => {
               key={`cell-${i}-${j}`}
               className={classes.cell}
             >
-              <span className={cellClassNameMap[cell] ?? ''} onClick={() => onCellClick(i, j)} />
+              <span className={getCellClassName(cell, i, j)} onClick={() => onCellClick(i, j)} />
             </td>
           ))}
         </tr>
