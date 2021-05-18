@@ -1,14 +1,9 @@
 // Game
 export const GAME_DOMAIN = 'game';
 export const JOIN_GAME = `${GAME_DOMAIN}/JOIN_GAME`;
-export const JOIN_GAME_SUCCESS = `${GAME_DOMAIN}/JOIN_GAME_SUCCESS`;
 export const JOIN_GAME_FAILURE = `${GAME_DOMAIN}/JOIN_GAME_FAILURE`;
 export const REQUEST_GAME_PLAY = `${GAME_DOMAIN}/REQUEST_GAME_PLAY`;
-export const GAME_PLAY = `${GAME_DOMAIN}/GAME_PLAY`;
 export const GAME_PLAY_FAILURE = `${GAME_DOMAIN}/GAME_PLAY_FAILURE`;
-export const GAME_END = `${GAME_DOMAIN}/GAME_END`;
-export const PLAYER_JOIN = `${GAME_DOMAIN}/PLAYER_JOIN`;
-export const PLAYER_LEAVE = `${GAME_DOMAIN}/PLAYER_LEAVE`;
 export const GAME_EVENT = `${GAME_DOMAIN}/GAME_EVENT`;
 
 export const GOMOKU = 'gomoku';

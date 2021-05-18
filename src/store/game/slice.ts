@@ -1,15 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { remove } from 'lodash';
 import type { Draft } from '@reduxjs/toolkit';
-import type {
-  GameSnapshot, GomokuGameAction, GomokuSnapshot
-} from '../../common/types';
+import type { GameSnapshot, GomokuGameAction, GomokuSnapshot } from '../../common/types';
 import type {
   GamePlayEvent, PlayerJoinEvent, PlayerLeaveEvent, GameEndEvent
 } from '../types';
-import {
-  GAME_DOMAIN, GAME_END, GAME_PLAY, GOMOKU, JOIN_GAME_SUCCESS, PLAYER_JOIN, PLAYER_LEAVE
-} from '../constants';
+import { GAME_DOMAIN, GOMOKU } from '../constants';
 
 export type GameState = {
   games: { [id: string]: GameSnapshot };
@@ -22,15 +18,14 @@ const initialState: GameState = {
 const gameSlice = createSlice({
   name: GAME_DOMAIN,
   initialState,
-  reducers: {},
-  extraReducers: {
-    [JOIN_GAME_SUCCESS]: (state, action: PayloadAction<GameSnapshot>) => {
+  reducers: {
+    joinGameSuccess: (state, action: PayloadAction<GameSnapshot>) => {
       const { games } = state;
       const { payload } = action;
 
       games[payload.gameId] = payload;
     },
-    [GAME_PLAY]: (state, action: PayloadAction<GamePlayEvent>) => {
+    gamePlayEvent: (state, action: PayloadAction<GamePlayEvent>) => {
       const { games } = state;
       const { gameId, action: gameAction } = action.payload;
 
@@ -50,7 +45,7 @@ const gameSlice = createSlice({
           break;
       }
     },
-    [PLAYER_JOIN]: (state, action: PayloadAction<PlayerJoinEvent>) => {
+    playerJoinEvent: (state, action: PayloadAction<PlayerJoinEvent>) => {
       const { games } = state;
       const { gameId, player: newPlayer } = action.payload;
 
@@ -61,7 +56,7 @@ const gameSlice = createSlice({
       remove(players, (player) => player.id === newPlayer.id);
       players.push(newPlayer);
     },
-    [PLAYER_LEAVE]: (state, action: PayloadAction<PlayerLeaveEvent>) => {
+    playerLeaveEvent: (state, action: PayloadAction<PlayerLeaveEvent>) => {
       const { games } = state;
       const { gameId, playerId } = action.payload;
 
@@ -71,7 +66,7 @@ const gameSlice = createSlice({
 
       remove(players, (player) => player.id === playerId);
     },
-    [GAME_END]: (state, action: PayloadAction<GameEndEvent>) => {
+    gameEndEvent: (state, action: PayloadAction<GameEndEvent>) => {
       const { games } = state;
       const { gameId } = action.payload;
 
