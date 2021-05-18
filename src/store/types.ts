@@ -42,6 +42,10 @@ export type GamePlayEvent = {
   action: GameAction;
 };
 
+export type GameEndEvent = {
+  gameId: GameID;
+};
+
 // Websocket
 export type EmitPayload = {
   event: any,

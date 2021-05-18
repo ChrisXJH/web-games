@@ -53,7 +53,11 @@ const Gomoku = () => {
 
   if (!game) return <Typography>Loading...</Typography>;
 
-  const { dimensions, actions = [], players = [] } = game;
+  const {
+    dimensions, actions = [], players = [], ended
+  } = game;
+
+  if (ended) return <Typography>The game has ended</Typography>;
 
   const colorMap = {
     [players[0]?.id]: 'B',

@@ -10,6 +10,7 @@ export interface GameSnapshot {
   gameId: GameID;
   name: string;
   players: User[];
+  ended: boolean;
 }
 
 export interface GameAction {

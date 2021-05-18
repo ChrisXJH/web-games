@@ -1,9 +1,10 @@
 import { createAction } from '@reduxjs/toolkit';
 import type { AnyAction } from '@reduxjs/toolkit';
 import type {
-  GameAction, GameID, GameSnapshot, User, UserID
+  GameAction, GameSnapshot, User, UserID
 } from '../../common/types';
 import type {
+  GameEndEvent,
   GameEvent, GamePlayEvent, PlayerJoinEvent, PlayerLeaveEvent
 } from '../types';
 import {
@@ -41,7 +42,7 @@ export const playerLeave = createAction(
 
 export const gameEnd = createAction(
   GAME_END,
-  (payload: GameID) => ({ payload })
+  (payload: GameEndEvent) => ({ payload })
 );
 
 const defaultGameEvent = createAction(
@@ -63,7 +64,7 @@ export const gameEvent = (event: GameEvent): AnyAction => {
       return gamePlay({ gameId, action: payload as GameAction });
 
     case GAME_END_EVENT:
-      return gameEnd(gameId);
+      return gameEnd({ gameId });
 
     default:
       break;

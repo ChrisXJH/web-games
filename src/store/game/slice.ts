@@ -4,9 +4,11 @@ import type { Draft } from '@reduxjs/toolkit';
 import type {
   GameSnapshot, GomokuGameAction, GomokuSnapshot
 } from '../../common/types';
-import type { GamePlayEvent, PlayerJoinEvent, PlayerLeaveEvent } from '../types';
+import type {
+  GamePlayEvent, PlayerJoinEvent, PlayerLeaveEvent, GameEndEvent
+} from '../types';
 import {
-  GAME_DOMAIN, GAME_PLAY, GOMOKU, JOIN_GAME_SUCCESS, PLAYER_JOIN, PLAYER_LEAVE
+  GAME_DOMAIN, GAME_END, GAME_PLAY, GOMOKU, JOIN_GAME_SUCCESS, PLAYER_JOIN, PLAYER_LEAVE
 } from '../constants';
 
 export type GameState = {
@@ -68,6 +70,14 @@ const gameSlice = createSlice({
       const { players } = games[gameId];
 
       remove(players, (player) => player.id === playerId);
+    },
+    [GAME_END]: (state, action: PayloadAction<GameEndEvent>) => {
+      const { games } = state;
+      const { gameId } = action.payload;
+
+      if (!games[gameId]) return;
+
+      games[gameId].ended = true;
     }
   }
 });
