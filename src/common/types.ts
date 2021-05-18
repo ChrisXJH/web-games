@@ -8,6 +8,7 @@ export interface User {
 
 export interface GameSnapshot {
   gameId: GameID;
+  name: string;
   players: User[];
 }
 

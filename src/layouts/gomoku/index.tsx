@@ -7,7 +7,7 @@ import { last } from 'lodash';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import type { GomokuGameAction, GomokuSnapshot } from '../../common/types';
 import GomokuBoard from './board';
-import { selectGame } from '../../store/game/selectors';
+import { selectGameById } from '../../store/game/selectors';
 import { joinGame, requestGamePlay } from '../../store/game/thunks';
 import Players from './players';
 import { selectUser } from '../../store/user/selectors';
@@ -30,17 +30,15 @@ const useStyles = makeStyles((theme) => ({
 const Gomoku = () => {
   const dispatch = useAppDispatch();
   const classes = useStyles();
-  const game = useAppSelector(selectGame);
-  const user = useAppSelector(selectUser);
   const { id: gameId } = useParams() as GomokuParams;
+  const game = useAppSelector(selectGameById(gameId)) as GomokuSnapshot;
+  const user = useAppSelector(selectUser);
 
   const userRegistered = Boolean(user.displayName);
 
   useEffect(() => {
     if (userRegistered) dispatch(joinGame(gameId));
   }, [dispatch, gameId, userRegistered]);
-
-  const { dimensions, actions = [], players = [] } = game.snapshot as GomokuSnapshot;
 
   const handleCellClick = useCallback(
     (x: number, y: number) => {
@@ -51,11 +49,11 @@ const Gomoku = () => {
     [dispatch, gameId]
   );
 
-  if (game.ended) return <Typography>The game has ended</Typography>;
-
   if (!userRegistered) return <Redirect to={`${HOME_PATH}?join=${gameId}`} />;
 
-  if (!dimensions) return <Typography>Loading...</Typography>;
+  if (!game) return <Typography>Loading...</Typography>;
+
+  const { dimensions, actions = [], players = [] } = game;
 
   const colorMap = {
     [players[0]?.id]: 'B',

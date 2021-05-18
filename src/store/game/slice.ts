@@ -1,24 +1,20 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { remove } from 'lodash';
+import type { Draft } from '@reduxjs/toolkit';
 import type {
   GameSnapshot, GomokuGameAction, GomokuSnapshot
 } from '../../common/types';
 import type { GamePlayEvent, PlayerJoinEvent, PlayerLeaveEvent } from '../types';
 import {
-  GAME_DOMAIN, GAME_END, GAME_PLAY, JOIN_GAME_SUCCESS, PLAYER_JOIN, PLAYER_LEAVE
+  GAME_DOMAIN, GAME_PLAY, GOMOKU, JOIN_GAME_SUCCESS, PLAYER_JOIN, PLAYER_LEAVE
 } from '../constants';
 
 export type GameState = {
-  snapshot: GameSnapshot;
-  ended: boolean;
+  games: { [id: string]: GameSnapshot };
 };
 
 const initialState: GameState = {
-  snapshot: {
-    gameId: '',
-    players: []
-  },
-  ended: false
+  games: {}
 };
 
 const gameSlice = createSlice({
@@ -27,31 +23,51 @@ const gameSlice = createSlice({
   reducers: {},
   extraReducers: {
     [JOIN_GAME_SUCCESS]: (state, action: PayloadAction<GameSnapshot>) => {
-      state.snapshot = action.payload;
-      state.ended = false;
+      const { games } = state;
+      const { payload } = action;
+
+      games[payload.gameId] = payload;
     },
     [GAME_PLAY]: (state, action: PayloadAction<GamePlayEvent>) => {
-      // Gomoku-only for now
-      const { action: gameAction } = action.payload;
-      const { actions } = state.snapshot as GomokuSnapshot;
+      const { games } = state;
+      const { gameId, action: gameAction } = action.payload;
 
-      actions.push(gameAction as GomokuGameAction);
+      if (!games[gameId]) return;
+
+      const { name } = games[gameId];
+
+      switch (name) {
+        case GOMOKU: {
+          const game = games[gameId] as Draft<GomokuSnapshot>;
+          game.actions.push(gameAction as GomokuGameAction);
+
+          break;
+        }
+
+        default:
+          break;
+      }
     },
     [PLAYER_JOIN]: (state, action: PayloadAction<PlayerJoinEvent>) => {
-      const { players } = state.snapshot;
-      const { player: newPlayer } = action.payload;
+      const { games } = state;
+      const { gameId, player: newPlayer } = action.payload;
+
+      if (!games[gameId]) return;
+
+      const { players } = games[gameId];
 
       remove(players, (player) => player.id === newPlayer.id);
       players.push(newPlayer);
     },
     [PLAYER_LEAVE]: (state, action: PayloadAction<PlayerLeaveEvent>) => {
-      const { players } = state.snapshot;
-      const { playerId } = action.payload;
+      const { games } = state;
+      const { gameId, playerId } = action.payload;
+
+      if (!games[gameId]) return;
+
+      const { players } = games[gameId];
 
       remove(players, (player) => player.id === playerId);
-    },
-    [GAME_END]: (state) => {
-      state.ended = true;
     }
   }
 });

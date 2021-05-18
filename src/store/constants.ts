@@ -11,6 +11,8 @@ export const PLAYER_JOIN = `${GAME_DOMAIN}/PLAYER_JOIN`;
 export const PLAYER_LEAVE = `${GAME_DOMAIN}/PLAYER_LEAVE`;
 export const GAME_EVENT = `${GAME_DOMAIN}/GAME_EVENT`;
 
+export const GOMOKU = 'gomoku';
+
 export const PLAYER_JOIN_EVENT = 'PLAYER_JOIN';
 export const PLAYER_LEAVE_EVENT = 'PLAYER_LEAVE';
 export const GAME_PLAY_EVENT = 'GAME_PLAY';
