@@ -12,6 +12,7 @@ export const PLAYER_JOIN_EVENT = 'PLAYER_JOIN';
 export const PLAYER_LEAVE_EVENT = 'PLAYER_LEAVE';
 export const GAME_PLAY_EVENT = 'GAME_PLAY';
 export const GAME_END_EVENT = 'GAME_END';
+export const GOMOKU_GAME_WIN_EVENT = 'GOMOKU_GAME_WIN';
 
 // User
 export const USER_DOMAIN = 'user';

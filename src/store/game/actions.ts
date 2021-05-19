@@ -4,12 +4,13 @@ import type { GameAction, User, UserID } from '../../common/types';
 import type { GameEvent } from '../types';
 import {
   GAME_EVENT, GAME_PLAY_EVENT, JOIN_GAME_FAILURE,
-  PLAYER_JOIN_EVENT, PLAYER_LEAVE_EVENT, GAME_END_EVENT
+  PLAYER_JOIN_EVENT, PLAYER_LEAVE_EVENT, GAME_END_EVENT, GOMOKU_GAME_WIN_EVENT
 } from '../constants';
 import gameSlice from './slice';
 
 export const {
-  joinGameSuccess, gamePlayEvent, playerJoinEvent, playerLeaveEvent, gameEndEvent
+  joinGameSuccess, gamePlayEvent, playerJoinEvent, playerLeaveEvent, gameEndEvent,
+  gomokuGameWinEvent
 } = gameSlice.actions;
 
 export const joinGameFailure = createAction(JOIN_GAME_FAILURE);
@@ -34,6 +35,10 @@ export const gameEvent = (event: GameEvent): AnyAction => {
 
     case GAME_END_EVENT:
       return gameEndEvent({ gameId });
+
+    // Gomoku Events
+    case GOMOKU_GAME_WIN_EVENT:
+      return gomokuGameWinEvent({ gameId, winner: payload as UserID });
 
     default:
       break;

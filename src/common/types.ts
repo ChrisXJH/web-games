@@ -25,6 +25,7 @@ export interface GomokuGameAction extends GameAction {
 export interface GomokuSnapshot extends GameSnapshot {
   dimensions: [number, number];
   actions: GomokuGameAction[];
+  winner: UserID | null;
 }
 
 // Websocket Requests

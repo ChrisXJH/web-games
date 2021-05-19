@@ -46,6 +46,11 @@ export type GameEndEvent = {
   gameId: GameID;
 };
 
+export type GomokuGameWinEvent = {
+  gameId: GameID;
+  winner: UserID;
+};
+
 // Websocket
 export type EmitPayload = {
   event: any,

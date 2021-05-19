@@ -1,5 +1,8 @@
-import React, { useCallback, useEffect } from 'react';
+import React, {
+  memo, useCallback, useEffect, useMemo
+} from 'react';
 import {
+  Box,
   Container, Grid, makeStyles, Typography
 } from '@material-ui/core';
 import { Redirect, useParams } from 'react-router-dom';
@@ -12,10 +15,13 @@ import { joinGame, requestGamePlay } from '../../store/game/thunks';
 import Players from './players';
 import { selectUser } from '../../store/user/selectors';
 import { HOME_PATH } from '../../common/constants';
+import WinnerBanner from './winner-banner';
 
 type GomokuParams = {
   id: string;
 };
+
+const COLORS = ['B', 'W'];
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -27,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const Gomoku = () => {
+const Gomoku = memo(() => {
   const dispatch = useAppDispatch();
   const classes = useStyles();
   const { id: gameId } = useParams() as GomokuParams;
@@ -49,30 +55,45 @@ const Gomoku = () => {
     [dispatch, gameId]
   );
 
+  const {
+    dimensions, actions = [], players = [], ended, winner: winnerId
+  } = game ?? {};
+
+  const colorMap = useMemo(
+    () => players.reduce(
+      (result, player, index) => {
+        result[player.id] = COLORS[index];
+        return result;
+      },
+      {} as { [key: string]: string }
+    ),
+    [players]
+  );
+
+  const gameGrid = useMemo(() => {
+    if (!dimensions) return [];
+
+    const grid = new Array(dimensions[0]).fill(null).map(
+      () => new Array(dimensions[1]).fill('U')
+    );
+
+    actions.forEach(({ playerId, x, y }) => {
+      grid[x][y] = colorMap[playerId as string] ?? null;
+    });
+
+    return grid;
+  }, [dimensions, colorMap, actions]);
+
+  const winner = useMemo(
+    () => players.find((p) => p.id === winnerId) ?? null,
+    [players, winnerId]
+  );
+
   if (!userRegistered) return <Redirect to={`${HOME_PATH}?join=${gameId}`} />;
 
   if (!game) return <Typography>Loading...</Typography>;
 
-  const {
-    dimensions, actions = [], players = [], ended
-  } = game;
-
   if (ended) return <Typography>The game has ended</Typography>;
-
-  const colorMap = {
-    [players[0]?.id]: 'B',
-    [players[1]?.id]: 'W'
-  };
-
-  const [m, n] = dimensions;
-
-  const gameGrid = new Array(m).fill(null).map(
-    () => new Array(n).fill('U')
-  );
-
-  actions.forEach(({ playerId, x, y }) => {
-    gameGrid[x][y] = colorMap[playerId as string] ?? null;
-  });
 
   const { x: focusedX = null, y: focusedY = null } = last(actions) ?? {};
 
@@ -80,17 +101,20 @@ const Gomoku = () => {
     <Container className={classes.container}>
       <Grid container>
         <Grid item md={6} className={classes.boardContainer}>
-          {
-            players.length < 2
-              ? <Typography>Waiting for another player to join</Typography>
-              : (
-                <GomokuBoard
-                  grid={gameGrid}
-                  focused={[focusedX, focusedY]}
-                  onCellClick={handleCellClick}
-                />
-              )
-          }
+          <Box display="flex" flexDirection="column">
+            <WinnerBanner winner={winner} />
+            {
+              players.length < 2
+                ? <Typography>Waiting for another player to join</Typography>
+                : (
+                  <GomokuBoard
+                    grid={gameGrid}
+                    focused={[focusedX, focusedY]}
+                    onCellClick={handleCellClick}
+                  />
+                )
+            }
+          </Box>
         </Grid>
         <Grid item md={6}>
           <Players players={players} />
@@ -98,6 +122,6 @@ const Gomoku = () => {
       </Grid>
     </Container>
   );
-};
+});
 
 export default Gomoku;
