@@ -1,16 +1,19 @@
 import { createAction } from '@reduxjs/toolkit';
 import type { AnyAction } from '@reduxjs/toolkit';
-import type { GameAction, User, UserID } from '../../common/types';
+import type {
+  GameAction, GameSnapshot, User, UserID
+} from '../../common/types';
 import type { GameEvent } from '../types';
 import {
   GAME_EVENT, GAME_PLAY_EVENT, JOIN_GAME_FAILURE,
-  PLAYER_JOIN_EVENT, PLAYER_LEAVE_EVENT, GAME_END_EVENT, GOMOKU_GAME_WIN_EVENT
+  PLAYER_JOIN_EVENT, PLAYER_LEAVE_EVENT, GAME_END_EVENT, GOMOKU_GAME_WIN_EVENT,
+  GAME_RESTART_EVENT
 } from '../constants';
 import gameSlice from './slice';
 
 export const {
   joinGameSuccess, gamePlayEvent, playerJoinEvent, playerLeaveEvent, gameEndEvent,
-  gomokuGameWinEvent
+  gameRestartEvent, gomokuGameWinEvent
 } = gameSlice.actions;
 
 export const joinGameFailure = createAction(JOIN_GAME_FAILURE);
@@ -35,6 +38,9 @@ export const gameEvent = (event: GameEvent): AnyAction => {
 
     case GAME_END_EVENT:
       return gameEndEvent({ gameId });
+
+    case GAME_RESTART_EVENT:
+      return gameRestartEvent({ gameId, snapshot: payload as GameSnapshot });
 
     // Gomoku Events
     case GOMOKU_GAME_WIN_EVENT:

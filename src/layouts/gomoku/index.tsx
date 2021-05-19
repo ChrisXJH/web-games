@@ -3,7 +3,8 @@ import React, {
 } from 'react';
 import {
   Box,
-  Container, Grid, makeStyles, Typography
+  Paper,
+  Container, Grid, makeStyles, Typography, Button
 } from '@material-ui/core';
 import { Redirect, useParams } from 'react-router-dom';
 import { last } from 'lodash';
@@ -11,7 +12,7 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import type { GomokuGameAction, GomokuSnapshot } from '../../common/types';
 import GomokuBoard from './board';
 import { selectGameById } from '../../store/game/selectors';
-import { joinGame, requestGamePlay } from '../../store/game/thunks';
+import { joinGame, requestGamePlay, requestGameRestart } from '../../store/game/thunks';
 import Players from './players';
 import { selectUser } from '../../store/user/selectors';
 import { HOME_PATH } from '../../common/constants';
@@ -46,17 +47,8 @@ const Gomoku = memo(() => {
     if (userRegistered) dispatch(joinGame(gameId));
   }, [dispatch, gameId, userRegistered]);
 
-  const handleCellClick = useCallback(
-    (x: number, y: number) => {
-      const action: GomokuGameAction = { x, y };
-
-      dispatch(requestGamePlay({ gameId, action }));
-    },
-    [dispatch, gameId]
-  );
-
   const {
-    dimensions, actions = [], players = [], ended, winner: winnerId
+    dimensions, actions = [], players = [], ended, winner: winnerId, owner
   } = game ?? {};
 
   const colorMap = useMemo(
@@ -89,6 +81,19 @@ const Gomoku = memo(() => {
     [players, winnerId]
   );
 
+  const ownGame = owner && user && owner.id === user.id;
+
+  const handleCellClick = useCallback(
+    (x: number, y: number) => {
+      const action: GomokuGameAction = { x, y };
+
+      dispatch(requestGamePlay({ gameId, action }));
+    },
+    [dispatch, gameId]
+  );
+
+  const handleRestart = useCallback(() => dispatch(requestGameRestart(gameId)), [dispatch, gameId]);
+
   if (!userRegistered) return <Redirect to={`${HOME_PATH}?join=${gameId}`} />;
 
   if (!game) return <Typography>Loading...</Typography>;
@@ -100,7 +105,7 @@ const Gomoku = memo(() => {
   return (
     <Container className={classes.container}>
       <Grid container>
-        <Grid item md={6} className={classes.boardContainer}>
+        <Grid item md={8} className={classes.boardContainer}>
           <Box display="flex" flexDirection="column">
             <WinnerBanner winner={winner} />
             {
@@ -116,8 +121,21 @@ const Gomoku = memo(() => {
             }
           </Box>
         </Grid>
-        <Grid item md={6}>
-          <Players players={players} />
+        <Grid item md={4}>
+          <Paper>
+            <Box padding={2}>
+              <Players players={players} />
+            </Box>
+          </Paper>
+          {
+            winnerId && ownGame && (
+              <Paper>
+                <Box padding={2} marginTop={2}>
+                  <Button variant="contained" color="secondary" onClick={handleRestart}>Restart</Button>
+                </Box>
+              </Paper>
+            )
+          }
         </Grid>
       </Grid>
     </Container>

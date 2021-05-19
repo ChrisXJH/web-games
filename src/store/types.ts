@@ -1,6 +1,6 @@
 import type { Dispatch } from '@reduxjs/toolkit';
 import type {
-  GameAction, GameID, User, UserID
+  GameAction, GameID, GameSnapshot, User, UserID
 } from '../common/types';
 import type GameService from '../services/game-service';
 import type UserService from '../services/user-service';
@@ -44,6 +44,11 @@ export type GamePlayEvent = {
 
 export type GameEndEvent = {
   gameId: GameID;
+};
+
+export type GameRestartEvent = {
+  gameId: GameID;
+  snapshot: GameSnapshot;
 };
 
 export type GomokuGameWinEvent = {

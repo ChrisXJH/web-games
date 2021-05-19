@@ -3,7 +3,8 @@ import { remove } from 'lodash';
 import type { Draft } from '@reduxjs/toolkit';
 import type { GameSnapshot, GomokuGameAction, GomokuSnapshot } from '../../common/types';
 import type {
-  GamePlayEvent, PlayerJoinEvent, PlayerLeaveEvent, GameEndEvent, GomokuGameWinEvent
+  GamePlayEvent, PlayerJoinEvent, PlayerLeaveEvent, GameEndEvent, GomokuGameWinEvent,
+  GameRestartEvent
 } from '../types';
 import { GAME_DOMAIN, GOMOKU } from '../constants';
 
@@ -73,6 +74,14 @@ const gameSlice = createSlice({
       if (!games[gameId]) return;
 
       games[gameId].ended = true;
+    },
+    gameRestartEvent: (state, action: PayloadAction<GameRestartEvent>) => {
+      const { games } = state;
+      const { gameId, snapshot } = action.payload;
+
+      if (!games[gameId]) return;
+
+      games[gameId] = snapshot;
     },
 
     // Gomoku Reducers
