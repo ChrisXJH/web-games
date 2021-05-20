@@ -38,7 +38,7 @@
   },
   "scripts": {
     "start": "DISABLE_ESLINT_PLUGIN=true react-scripts start",
-    "build": "DISABLE_ESLINT_PLUGIN=true react-scripts build",
+    "build": "./scripts/build.sh",
     "test": "DISABLE_ESLINT_PLUGIN=true react-scripts test",
     "lint": "npx eslint . --ext .ts,.tsx",
     "lint-fix": "npx eslint . --ext .ts,.tsx --fix",
