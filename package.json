@@ -1,6 +1,7 @@
 {
   "name": "web-games",
   "version": "0.1.0",
+  "homepage": "https://chrisxjh.github.io/web-games",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.11.4",
