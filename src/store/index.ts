@@ -20,7 +20,9 @@ const servicesAPI: ServicesAPI = {
   websocketService
 };
 
-export const history = createBrowserHistory();
+export const history = process.env.NODE_ENV === 'production'
+  ? createBrowserHistory({ basename: '/web-games' })
+  : createBrowserHistory();
 
 const store = configureStore({
   reducer: createRootReducer(history),
